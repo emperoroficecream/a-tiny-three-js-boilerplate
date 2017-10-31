@@ -1,21 +1,46 @@
-import { Scene } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.module.js';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.module.js';
 
-const scene = new Scene();
+let container, stats;
+let camera, scene, renderer;
+let pointLight;
 
-var stats = new Stats();
-stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild( stats.domElement );
+init();
+animate();
 
-function animate() {
+function init() {
+  container = document.createElement('div');
+  document.body.appendChild(container);
 
-	stats.begin();
+  const aspectRatio = window.innerWidth / window.innerHeight;
+  camera = new THREE.PerspectiveCamera(45, aspectRatio, 1, 2000);
 
-	// monitored code goes here
+  scene = new THREE.Scene();
 
-	stats.end();
+  // Grid
+  const gridHelper = new THREE.GridHelper(1000, 40, 0x303030, 0x303030);
+  gridHelper.position.y = - 75;
+  scene.add(gridHelper);
 
-	requestAnimationFrame( animate );
+  // Lights
+  scene.add(new THREE.AmbientLight(0x111111));
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+	renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  stats = new Stats();
+  container.appendChild(stats.domElement);
 
 }
 
-requestAnimationFrame( animate );
+function render() {
+  renderer.render(scene, camera);
+}
+
+function animate() {
+  window.requestAnimationFrame(animate);
+  render();
+  stats.update();
+}
+
